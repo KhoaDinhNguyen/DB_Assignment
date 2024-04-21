@@ -96,3 +96,6 @@ BEGIN
     INSERT INTO sponsorship(sponsor, team, start_date, end_date, money) VALUE (_sponsor_name, _team, _start_date, _end_date, _money);
 END$$
 DELIMITER ;
+
+
+#Nguyen Ngoc Dinh Khoa
