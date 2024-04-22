@@ -74,15 +74,17 @@ BEGIN
 END $$
 
 DELETE FROM staff WHERE ssn = '123456789';
-CALL insert_staff_streamer('123456789', '2004-05-13', 'Nguyen Ngoc Dinh Khoa', 1234, 'Le Van Tho', 'Ho Chi Minh', '0394913053', 'nhock', '1111111');
+CALL insert_staff('123456789', '2004-05-13', 'Nguyen Ngoc Dinh Khoa', 1234, 'Le Van Tho', 'Ho Chi Minh', '0394913053');
+CALL insert_staff('123456780', '1998-05-13', 'Nguyen Ngoc Dang Khoa', 1724, 'Le Van Tho', 'Ho Chi Minh', '0394913053');
 SELECT * FROM staff;
 SELECT* FROM streamer;
-SELECT* FROM play;
+SELECT* FROM coach;
+SELECT* FROM player;
 
 ##################################################### GAME #################################################################
 
 
-##################################################### TEAM #################################################################
+##################################################### COACH #################################################################
 DELIMITER $$
 CREATE TRIGGER delete_coach BEFORE DELETE ON coach
 FOR EACH ROW
@@ -100,6 +102,32 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+CREATE PROCEDURE insert_coach(IN _Nick_Name VARCHAR(50), IN _Coach_Id VARCHAR(7), _Team VARCHAR(50), IN skills CHAR(7))
+BEGIN
+	INSERT INTO Coach(Nick_Name, Coach_Id, Team) VALUE (_Nick_Name, _Coach_Id, _Team);
+    IF SUBSTRING(skills, 1, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Financial Insurance'); END IF;
+    IF SUBSTRING(skills, 2, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Health Management'); END IF;
+    IF SUBSTRING(skills, 3, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Food Ensuring'); END IF;
+    IF SUBSTRING(skills, 4, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Gameplay Strategy'); END IF;
+    IF SUBSTRING(skills, 5, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Mental Health'); END IF;
+    IF SUBSTRING(skills, 6, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Time Management'); END IF;
+    IF SUBSTRING(skills, 7, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Sport and Body Builder'); END IF;
+END$$
+DELIMITER ;
+/*
+DROP PROCEDURE insert_coach;
+SELECT * FROM Staff;
+SELECT * FROM Coach;
+SELECT * FROM Team;
+SELECT * FROM Coach_Skills;
+DELETE FROM Staff WHERE Staff_ID = 'EMP0054';
+*/
+
+CALL insert_coach('nhock', 'EMP0051', 'Telecom Esport', '1100010');
+CALL insert_coach('blue', 'EMP0055', 'Telecom Esport', '1110011');
+##################################################### TEAM #################################################################
+
+DELIMITER $$
 CREATE TRIGGER delete_professional BEFORE DELETE ON Professional_Player
 FOR EACH ROW
 BEGIN
@@ -115,23 +143,36 @@ BEGIN
 END$$
 DELIMITER ;
 
+DELIMITER $$
+CREATE PROCEDURE check_free_player()
+BEGIN
+	SELECT Staff_id, Name AS 'Free staff'
+    FROM Staff
+    WHERE Staff_Id NOT IN (
+		SELECT Player_ID FROM Player 
+		UNION 
+		SELECT Coach_Id FROM Coach);
+END $$
+DELIMITER ;
+                
+CALL check_free_player();
+
+DELIMITER $$
+CREATE PROCEDURE insert_team(IN _team_name VARCHAR(50), IN _game_id CHAR(7), IN start_date DATE, IN _coach_id CHAR(7), IN _pro_id CHAR(7))
+BEGIN
+	IF NOT EXISTS (SELECT game_id FROM game WHERE game_id = _game) THEN
+     SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'The game does not exist, can not create this team';
+    END IF;
+	CALL insert_staff(_ssn, _Dob, _Name, _Salary, _Street, _City, _phone);
+    CALL insert_streamer(@staff_id_insert, _nick_name, _game);
+END$$
+DELIMITER ;
+
 DELETE FROM Coach WHERE Coach_id = 'EMP0031';
 DELETE FROM Coach WHERE Coach_id = 'EMP0032';
 DELETE FROM Coach WHERE Coach_id = 'EMP0033';
 ##################################################### STREAMER #################################################################
-
-# INSERT COACH OR PROFESSIONAL PLAYER WITHOUT COACH
-DELIMITER $$
-CREATE TRIGGER coach_condition BEFORE INSERT ON Coach 
-FOR EACH ROW
-BEGIN
-	IF NOT EXISTS (select team_name FROM team WHERE team_name.NEW = Team) THEN
-		SIGNAL SQLSTATE '45000'
-			SET MESSAGE_TEXT = 'This game does not exist, can not create coach';
-	END IF;
-END$$
-DELIMITER ;
-
 DELIMITER $$
 CREATE TRIGGER professional_condition BEFORE INSERT ON Professional_Player 
 FOR EACH ROW
