@@ -132,6 +132,18 @@ INSERT INTO Staff_Phones(Staff_Id, Phone) VALUES
 ('EMP0050', '0937100834'),
 ('EMP0050', '0984739800');
 
+INSERT INTO Game(Game_ID, Name, Creator, Year_Release) VALUES 
+('1111111', 'League of Legends', 'Riot Games', '2009'),
+('1234567', 'Valorant', 'Riot Games', '2020'),
+('1305111', 'Dota2', 'Valve', '2013');
+
+INSERT INTO Team(Team_Name, Status, Start_date, Game_ID) VALUES
+('Valorant VietNam Esport', 'Running', '2020-01-01','1234567'),
+('Young Whale', 'Not enough member', '2024-01-01','1111111'),
+('Dragon Blue League', 'Not enough member', '2021-01-01','1305111'),
+('Ceberus Esport', 'Running', '2023-01-01', '1305111'),
+('Telecom Esport', 'Running', '2018-01-01', '1111111');
+
 INSERT INTO Player(Player_Id, Nick_Name) VALUES
 ('EMP0001', 'jfTKfr'), 
 ('EMP0002', 'yIGULjU'),
@@ -163,18 +175,6 @@ INSERT INTO Player(Player_Id, Nick_Name) VALUES
 ('EMP0028', 'OfsRJGz'),
 ('EMP0029', 'fKAXK'),
 ('EMP0030', 'CmXhm');
-
-INSERT INTO Game(Game_ID, Name, Creator, Year_Release) VALUES 
-('1111111', 'League of Legends', 'Riot Games', '2009'),
-('1234567', 'Valorant', 'Riot Games', '2020'),
-('1305111', 'Dota2', 'Valve', '2013');
-
-INSERT INTO Team(Team_Name, Status, Start_date) VALUES
-('Valorant VietNam Esport', 'Running', '2020-01-01'),
-('Young Whale', 'Not enough member', '2024-01-01'),
-('Dragon Blue League', 'Not enough member', '2021-01-01'),
-('Ceberus Esport', 'Running', '2023-01-01'),
-('Telecom Esport', 'Running', '2018-01-01');
 
 INSERT INTO Coach(Coach_Id, Nick_Name, Team) VALUES
 ('EMP0031', 'oYJBA', 'Valorant VietNam Esport'),
@@ -316,27 +316,27 @@ INSERT INTO Play(Player, Game) VALUES
 ('EMP0030', '1305111'),
 ('EMP0030', '1111111');
 
-INSERT INTO Professional_player(Player_Id, Debut_date, Team, Game) VALUES
-('EMP0001', '2022-01-01', 'Valorant VietNam Esport', '1234567'),
-('EMP0002', '2023-01-01', 'Valorant VietNam Esport', '1234567'),
-('EMP0003', '2022-06-01', 'Valorant VietNam Esport', '1234567'),
-('EMP0004', '2024-01-01', 'Valorant VietNam Esport', '1234567'),
-('EMP0005', '2022-06-01', 'Valorant VietNam Esport', '1234567'),
-('EMP0006', '2021-01-01', 'Valorant VietNam Esport', '1234567'),
-('EMP0007', '2024-01-01', 'Young Whale', '1111111'),
-('EMP0008', '2024-01-01', 'Young Whale', '1111111'),
-('EMP0009', '2023-06-01', 'Dragon Blue League', '1305111'),
-('EMP0010', '2022-08-01', 'Dragon Blue League', '1305111'),
-('EMP0011', '2024-01-01', 'Ceberus Esport', '1305111'),
-('EMP0012', '2024-01-01', 'Ceberus Esport', '1305111'),
-('EMP0013', '2023-01-01', 'Ceberus Esport', '1305111'),
-('EMP0014', '2023-06-01', 'Ceberus Esport', '1305111'),
-('EMP0015', '2023-06-01', 'Ceberus Esport', '1305111'),
-('EMP0016', '2019-05-01', 'Telecom Esport', '1111111'),
-('EMP0017', '2022-05-01', 'Telecom Esport', '1111111'),
-('EMP0018', '2018-05-01', 'Telecom Esport', '1111111'),
-('EMP0019', '2024-05-01', 'Telecom Esport', '1111111'),
-('EMP0020', '2022-05-01', 'Telecom Esport', '1111111');
+INSERT INTO Professional_player(Player_Id, Debut_date, Team) VALUES
+('EMP0001', '2022-01-01', 'Valorant VietNam Esport'),
+('EMP0002', '2023-01-01', 'Valorant VietNam Esport'),
+('EMP0003', '2022-06-01', 'Valorant VietNam Esport'),
+('EMP0004', '2024-01-01', 'Valorant VietNam Esport'),
+('EMP0005', '2022-06-01', 'Valorant VietNam Esport'),
+('EMP0006', '2021-01-01', 'Valorant VietNam Esport'),
+('EMP0007', '2024-01-01', 'Young Whale'),
+('EMP0008', '2024-01-01', 'Young Whale'),
+('EMP0009', '2023-06-01', 'Dragon Blue League'),
+('EMP0010', '2022-08-01', 'Dragon Blue League'),
+('EMP0011', '2024-01-01', 'Ceberus Esport'),
+('EMP0012', '2024-01-01', 'Ceberus Esport'),
+('EMP0013', '2023-01-01', 'Ceberus Esport'),
+('EMP0014', '2023-06-01', 'Ceberus Esport'),
+('EMP0015', '2023-06-01', 'Ceberus Esport'),
+('EMP0016', '2019-05-01', 'Telecom Esport'),
+('EMP0017', '2022-05-01', 'Telecom Esport'),
+('EMP0018', '2018-05-01', 'Telecom Esport'),
+('EMP0019', '2024-05-01', 'Telecom Esport'),
+('EMP0020', '2022-05-01', 'Telecom Esport');
 
 INSERT INTO Streamer(Player_Id) VALUES
 ('EMP0016'),

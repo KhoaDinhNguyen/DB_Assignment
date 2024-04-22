@@ -36,16 +36,25 @@ create table Staff_Phones (
     constraint Staff_Phones_FK_Staff_Id foreign key (Staff_Id) references Staff (Staff_Id) on delete cascade on update cascade
 );
 
-create table Player (
-	Nick_Name 	varchar(50),
-    Player_Id 	char(7) primary key,
-	constraint Player_FK_Player_Id foreign key (Player_Id) references Staff (Staff_Id) on delete cascade on update cascade
+create table Game (
+	Game_Id		char(7) primary key,
+    Name 		varchar(50),
+    Creator		varchar(50),
+    Year_Release	char(4)
 );
 
 create table team (
 	team_name		varchar(50)		primary key,
+    Game_ID			char(7) not null,
     status			enum('Running', 'Not enough member'),
-    start_date	date
+    start_date	date,
+	constraint team_FK_game foreign key (Game_ID) references game(game_id) on delete cascade on update cascade
+);
+
+create table Player (
+	Nick_Name 	varchar(50),
+    Player_Id 	char(7) primary key,
+	constraint Player_FK_Player_Id foreign key (Player_Id) references Staff (Staff_Id) on delete cascade on update cascade
 );
 
 create table Coach (
@@ -62,13 +71,6 @@ create table Coach_Skills (
 					'Time Management', 'Sport and Body Builder'),
     primary key (Coach_Id, Skill),
     constraint Coach_Skills_FK_Coach_Id foreign key (Coach_Id) references Coach (Coach_Id) on delete cascade on update cascade
-);
-
-create table Game (
-	Game_Id		char(7) primary key,
-    Name 		varchar(50),
-    Creator		varchar(50),
-    Year_Release	char(4)
 );
 
 create table Game_Genres (
@@ -109,10 +111,8 @@ create table Professional_Player (
 	Player_Id 	char(7) primary key,
     Debut_Date 	date,
     Team		varchar(50) not null,
-    game 			char(7) not null,
 	constraint Professional_Player_FK_Player_Id foreign key (Player_Id) references Player (Player_Id) on delete cascade on update cascade,
-    constraint Professional_Player_FK_Team foreign key (Team) references Team (Team_Name) on delete cascade on update cascade,
-    constraint team_FK_game foreign key (game) references game(game_id)
+    constraint Professional_Player_FK_Team foreign key (Team) references Team (Team_Name) on delete cascade on update cascade
 );
 
 create table Streamer (
