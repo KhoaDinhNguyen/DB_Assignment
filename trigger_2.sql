@@ -1,5 +1,6 @@
 USE GAME_COMPANY;
 
+######################################################### STAFF ###############################################################
 SET @staff_id_insert = '';
 
 DELIMITER $$
@@ -43,13 +44,82 @@ BEGIN
 END$$
 DELIMITER ;
 
+# trigger when insert and update staff
+DELIMITER $$
+CREATE TRIGGER insert_staff BEFORE INSERT ON Staff
+FOR EACH ROW
+BEGIN
+	IF (YEAR(CURDATE()) - YEAR(NEW.Dob) < 18) THEN
+	SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'The staff age is less than 18, cannot create this staff';
+	END IF;
+	IF (NEW.Salary < 1000) THEN
+	SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'The staff salary is less than 1000$, cannot create this staff';
+	END IF;
+END $$
+
+DELIMITER $$
+CREATE TRIGGER insert_staff BEFORE UPDATE ON Staff
+FOR EACH ROW
+BEGIN
+	IF (YEAR(CURDATE()) - YEAR(NEW.Dob) < 18) THEN
+	SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'The staff age is less than 18, cannot modify this staff';
+	END IF;
+	IF (NEW.Salary < 1000) THEN
+	SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'The staff salary is less than 1000$, cannot modify this staff';
+	END IF;
+END $$
 
 DELETE FROM staff WHERE ssn = '123456789';
 CALL insert_staff_streamer('123456789', '2004-05-13', 'Nguyen Ngoc Dinh Khoa', 1234, 'Le Van Tho', 'Ho Chi Minh', '0394913053', 'nhock', '1111111');
 SELECT * FROM staff;
 SELECT* FROM streamer;
 SELECT* FROM play;
-#####################################################
+
+##################################################### GAME #################################################################
+
+
+##################################################### TEAM #################################################################
+DELIMITER $$
+CREATE TRIGGER delete_coach BEFORE DELETE ON coach
+FOR EACH ROW
+BEGIN
+	DEcLARE num_of_coaches INT;
+	SELECT COUNT(*) INTO num_of_coaches
+    FROM coach
+    WHERE team = OLD.team;
+    
+    IF (num_of_coaches = 1) THEN
+	SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'The number of coach in team reach the minimum (= 1), cannot delete this staff';
+	END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER delete_professional BEFORE DELETE ON Professional_Player
+FOR EACH ROW
+BEGIN
+	DECLARE num_of_pros INT;
+	SELECT COUNT(*) INTO num_of_pros
+    FROM Professional_Player
+    WHERE team = OLD.team;
+    
+    IF (num_of_pros = 1) THEN
+	SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'The number of professional player in team reach the minimum (= 1), cannot delete this staff';
+	END IF;
+END$$
+DELIMITER ;
+
+DELETE FROM Coach WHERE Coach_id = 'EMP0031';
+DELETE FROM Coach WHERE Coach_id = 'EMP0032';
+DELETE FROM Coach WHERE Coach_id = 'EMP0033';
+##################################################### STREAMER #################################################################
+
 # INSERT COACH OR PROFESSIONAL PLAYER WITHOUT COACH
 DELIMITER $$
 CREATE TRIGGER coach_condition BEFORE INSERT ON Coach 
