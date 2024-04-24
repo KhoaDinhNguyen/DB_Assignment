@@ -96,6 +96,7 @@ BEGIN
 END$$
 DELIMITER ;
 */
+
 DELIMITER $$
 CREATE TRIGGER delete_staff_coach BEFORE DELETE ON Staff
 FOR EACH ROW
@@ -122,25 +123,20 @@ BEGIN
 END$$
 DELIMITER ;
 
-
-SELECT* FROM coach;
-
-DELETE FROM Coach WHERE Coach_id = 'EMP0031';
-DELETE FROM Coach WHERE Coach_id = 'EMP0032';
-DELETE FROM Coach WHERE Coach_id = 'EMP0033';
-
-CALL delete_staff('EMP0031');
-CALL delete_staff('EMP0032');
+/*
+SELECT* FROM game_company.professional_player;
+CALL delete_staff('EMP0007');
+CALL delete_staff('EMP0008');
 
 SELECT * FROM team;
 
 SET @num_of_coaches = 0;
 SELECT COUNT(*) INTO @num_of_coaches
-FROM coach
-WHERE team = 'Valorant VietNam Esport';
+FROM Professional_Player
+WHERE team = 'Young Whale';
 SELECT @num_of_coaches;
+*/
 
-CALL delete_staff('EMP0033');
 
 ##################################################### GAME #################################################################
 
