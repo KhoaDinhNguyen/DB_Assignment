@@ -160,7 +160,21 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE change_phone(IN _ssn CHAR(10), IN phone_1 CHAR(10), IN phone_2 CHAR(10))
+CREATE PROCEDURE change_phone_v1(IN _ssn CHAR(7), IN phone CHAR(10))
+BEGIN
+	IF(validate_phone(phone) = 0) THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'Invalid phone number, can not update phone';
+	END IF;
+    
+	DELETE FROM Staff_Phones WHERE Staff_Id = _ssn;
+    INSERT INTO Staff_Phones VALUE(_ssn, phone);
+END$$
+DELIMITER ;
+CALL change_phone_v1('EMP0007','1234567890');
+
+DELIMITER $$
+CREATE PROCEDURE change_phone_v2(IN _ssn CHAR(7), IN phone_1 CHAR(10), IN phone_2 CHAR(10))
 BEGIN
 	IF(validate_phone(phone_1) = 0 OR validate_phone(phone_2) = 0) THEN
 		SIGNAL SQLSTATE '45000'
