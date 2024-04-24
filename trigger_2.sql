@@ -13,37 +13,6 @@ BEGIN
 	INSERT INTO Staff_phones(staff_id, phone) VALUE (@staff_id_insert, _phone);
 END$$
 DELIMITER ;
-/*
-DELIMITER $$
-CREATE FUNCTION validate_phone(phone_1 CHAR(10))
-RETURNS INT
-DETERMINISTIC
-BEGIN
-	IF(length(phone_1) != 10) THEN RETURN 0;
-    END IF;
-    SET check_digit = SUBSTRING(phone_1, 1, 1);
-	IF '0' <= check_digit && '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Financial Insurance'); END IF;
-    IF SUBSTRING(skills, 2, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Health Management'); END IF;
-    IF SUBSTRING(skills, 3, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Food Ensuring'); END IF;
-    IF SUBSTRING(skills, 4, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Gameplay Strategy'); END IF;
-    IF SUBSTRING(skills, 5, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Mental Health'); END IF;
-    IF SUBSTRING(skills, 6, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Time Management'); END IF;
-    IF SUBSTRING(skills, 7, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Sport and Body Builder'); END IF;
-    IF SUBSTRING(skills, 7, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Sport and Body Builder'); END IF;
-    IF SUBSTRING(skills, 7, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Sport and Body Builder'); END IF;
-    IF SUBSTRING(skills, 7, 1) = '1' THEN INSERT INTO Coach_Skills(Coach_Id, Skill) VALUE (_Coach_Id, 'Sport and Body Builder'); END IF;
-END$$
-DELIMITER ;
-*/
-DELIMITER $$
-CREATE PROCEDURE change_phone(IN _ssn CHAR(10), IN phone_1 CHAR(10), IN phone_2 CHAR(10))
-BEGIN
-	DELETE FROM Staff_Phones WHERE Staff_Id = _ssn;
-    INSERT INTO Staff_Phones VALUE(_ssn, phone_1);
-    INSERT INTO Staff_Phones VALUE(_ssn, phone_2);
-END$$
-DELIMITER ;
-
 
 DELIMITER $$
 CREATE PROCEDURE insert_streamer(IN _staff_id CHAR(7), IN _nick_name VARCHAR(50), _game CHAR(7))
@@ -166,6 +135,48 @@ SELECT COUNT(*) INTO @num_of_coaches
 FROM Professional_Player
 WHERE team = 'Young Whale';
 SELECT @num_of_coaches;
+*/
+
+DELIMITER $$
+CREATE FUNCTION validate_phone(phone_1 CHAR(10))
+RETURNS INT
+DETERMINISTIC
+BEGIN
+	IF(length(phone_1) != 10) THEN RETURN 0;
+    END IF;
+	IF NOT(SUBSTRING(phone_1, 1, 1) BETWEEN '0' AND '9') THEN RETURN 0;
+    ELSEIF NOT(SUBSTRING(phone_1, 2, 1) BETWEEN '0' AND '9') THEN RETURN 0;
+    ELSEIF NOT(SUBSTRING(phone_1, 3, 1) BETWEEN '0' AND '9') THEN RETURN 0;
+    ELSEIF NOT(SUBSTRING(phone_1, 4, 1) BETWEEN '0' AND '9') THEN RETURN 0;
+    ELSEIF NOT(SUBSTRING(phone_1, 5, 1) BETWEEN '0' AND '9') THEN RETURN 0;
+    ELSEIF NOT(SUBSTRING(phone_1, 6, 1) BETWEEN '0' AND '9') THEN RETURN 0;
+    ELSEIF NOT(SUBSTRING(phone_1, 7, 1) BETWEEN '0' AND '9') THEN RETURN 0;
+    ELSEIF NOT(SUBSTRING(phone_1, 8, 1) BETWEEN '0' AND '9') THEN RETURN 0;
+    ELSEIF NOT(SUBSTRING(phone_1, 9, 1) BETWEEN '0' AND '9') THEN RETURN 0;
+    ELSEIF NOT(SUBSTRING(phone_1, 10, 1) BETWEEN '0' AND '9') THEN RETURN 0;
+    END IF;
+	RETURN 1;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE change_phone(IN _ssn CHAR(10), IN phone_1 CHAR(10), IN phone_2 CHAR(10))
+BEGIN
+	IF(validate_phone(phone_1) = 0 OR validate_phone(phone_2) = 0) THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'Invalid phone number, can not update phone';
+	END IF;
+    
+	DELETE FROM Staff_Phones WHERE Staff_Id = _ssn;
+    INSERT INTO Staff_Phones VALUE(_ssn, phone_1);
+	INSERT INTO Staff_Phones VALUE(_ssn, phone_2);
+END$$
+DELIMITER ;
+
+/*
+DROP PROCEDURE change_phone;
+SELECT * FROM game_company.staff_phones;
+CALL change_phone('EMP0002','1234567890', '0123456789');
 */
 
 
