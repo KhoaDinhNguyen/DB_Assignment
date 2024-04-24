@@ -106,15 +106,6 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE TRIGGER delete_staff_pro BEFORE DELETE ON Staff
-FOR EACH ROW
-BEGIN
-	DELETE FROM Professional_Player 
-    WHERE Player_Id = OLD.Staff_Id; 
-END$$
-DELIMITER ;
-
-DELIMITER $$
 CREATE PROCEDURE delete_staff(IN _staff_id CHAR(7))
 BEGIN
 	DELETE FROM Staff 

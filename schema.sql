@@ -21,7 +21,7 @@ create table Staff (
 );
 
 DELIMITER $$
-CREATE TRIGGER insert_staff BEFORE INSERT ON staff
+CREATE TRIGGER auto_key BEFORE INSERT ON staff
 FOR EACH ROW 
 BEGIN
 	INSERT INTO id_count VALUES (NULL);
