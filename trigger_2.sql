@@ -73,6 +73,8 @@ BEGIN
 	END IF;
 END $$
 
+#CALL insert_staff('123456789', '2020-05-13', 'Nguyen Ngoc Dinh Khoa', 1234, 'Le Van Tho', 'Ho Chi Minh', '0394913053');
+#CALL insert_staff('123846789', '2004-05-13', 'Nguyen Anh Khoa', 999, 'Ly Thuong Kiet', 'Ho Chi Minh', '0390903053');
 /*
 DELETE FROM staff WHERE ssn = '123456789';
 CALL insert_staff('123456789', '2004-05-13', 'Nguyen Ngoc Dinh Khoa', 1234, 'Le Van Tho', 'Ho Chi Minh', '0394913053');
@@ -336,7 +338,10 @@ DELIMITER $$
 CREATE PROCEDURE insert_sponser(IN _sponsor_name VARCHAR(50), IN _industry VARCHAR(50), IN _nationality VARCHAR(50),
 								IN _team VARCHAR(50), IN _start_date DATE, IN _end_date DATE, IN _money DECIMAL(10,2))
 BEGIN
-	IF NOT EXISTS (select team_name FROM team WHERE team_name = _team) THEN
+	IF(_start_date > _end_date OR _start_date > CURDATE()) THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'The date is invalid';
+	ELSEIF NOT EXISTS (select team_name FROM team WHERE team_name = _team) THEN
 		SIGNAL SQLSTATE '45000'
 			SET MESSAGE_TEXT = 'This team does not exist, can not create sponsor';
 	END IF;
@@ -345,6 +350,10 @@ BEGIN
 END$$
 DELIMITER ;
 
-
+/*
+CALL insert_sponser('Coca cola', 'Beverage', 'America', 'Telecom Esport', '2024-05-13', '2024-12-31', 10000); 
+CALL insert_sponser('Coca cola', 'Beverage', 'America', 'Dinh Khoa', '2024-01-13', '2024-12-31', 10000); 
+CALL insert_sponser('Coca cola', 'Beverage', 'America', 'Telecom Esport', '2024-01-13', '2024-12-31', 10000); 
+*/
 #Nguyen Ngoc Dinh Khoa
 # HAHA

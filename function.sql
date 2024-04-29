@@ -59,7 +59,10 @@ DETERMINISTIC
 BEGIN
 	DECLARE num1 INT;
     DECLARE num2 INT;
-    
+	IF(NOT EXISTS(SELECT * FROM Team WHERE team_name = _team_name)) THEN
+    RETURN -1;
+    END IF;
+
     SELECT COUNT(*) INTO num1
     FROM Professional_Player
     WHERE Team = _team_name;
