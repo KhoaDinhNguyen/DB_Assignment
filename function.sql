@@ -120,11 +120,9 @@ RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
 	DECLARE team_name VARCHAR(50);
-    DECLARE _salary DECIMAL(10,2);
     SET team_name = belong_to_team(_Staff_id);
-	SELECT Salary INTO _salary FROM Staff WHERE Staff_Id = _Staff_Id;
-    IF(team_name = 'NULL') THEN RETURN _salary;
-    ELSE RETURN _salary + Team_Salary_Per_Person(team_name);
+    IF(team_name = 'NULL') THEN RETURN 0;
+    ELSE RETURN Team_Salary_Per_Person(team_name);
     END IF;
 END $$
 DELIMITER ;
