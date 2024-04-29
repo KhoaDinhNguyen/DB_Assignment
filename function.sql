@@ -1,5 +1,6 @@
 USE GAME_COMPANY;
 
+# Create a function to calculate the total money the team get from sponser
 DELIMITER $$
 CREATE FUNCTION Team_Salary_from_Sponser(_team_name VARCHAR(50))
 RETURNS DECIMAL(10,2)
@@ -17,6 +18,7 @@ BEGIN
 END $$
 DELIMITER ;
 
+# Create a function to calculate the total money the team get from the last tournmant 
 DELIMITER $$
 CREATE FUNCTION Team_Salary_from_Tournament(_team_name VARCHAR(50))
 RETURNS DECIMAL(10,2)
@@ -34,6 +36,7 @@ BEGIN
 END $$
 DELIMITER ;
 
+# Create two view from two previous functions
 CREATE VIEW Team_Salary_Sponser AS
 SELECT Team_name, Team_Salary_from_sponser(Team_name) AS Sponser_money
 FROM team
@@ -48,6 +51,7 @@ SELECT Team_name, Team_Salary_from_Tournament(Team_name) AS Reward_money,
 FROM team
 GROUP BY team_name;
 
+# Count the number of people in the team
 DELIMITER $$
 CREATE FUNCTION number_of_people(_team_name VARCHAR(50))
 RETURNS INT
@@ -68,12 +72,14 @@ BEGIN
 END $$
 DELIMITER ;
 
+# Create information about team salary from this year
 CREATE VIEW Team_Salary AS
-SELECT t1.Team_name , Reward_money, Proportion, Sponser_money, number_of_people(t1.team_name) AS number_of_player
+SELECT t1.Team_name , Reward_money, Proportion, Sponser_money, number_of_people(t1.team_name) AS number_of_people
 FROM Team_Salary_Tournament t1
 JOIN Team_Salary_Sponser t2
 ON t1.Team_name = t2.team_name;
 
+# Find the team salary per person in the team
 DELIMITER $$
 CREATE FUNCTION Team_Salary_Per_Person(_team_name VARCHAR(50))
 RETURNS DECIMAL(10,2)
@@ -89,6 +95,7 @@ BEGIN
 END $$
 DELIMITER ;
 
+# Find if the staff belong to any team
 DELIMITER $$
 CREATE FUNCTION belong_to_team(_Staff_Id CHAR(7))
 RETURNS VARCHAR(50)
@@ -106,6 +113,7 @@ BEGIN
 END $$
 DELIMITER ;
 
+# find the salary for staff id
 DELIMITER $$
 CREATE FUNCTION salary(_Staff_Id CHAR(7))
 RETURNS DECIMAL(10,2)
