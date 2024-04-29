@@ -1,18 +1,13 @@
 Công thức tính tiền lương cho 1 team
 Công ty sẽ lấy 30% của giải thưởng + 50% sponser
 Tổng tiền lương của team sẽ là 70% của giải thưởng + 50% sponser
-Trong đó
-40% cho coach
-60% cho tuyển thủ
+Trong đó chia đều cho coach và player
 
 Chỉ xét những giải thưởng có trong năm trước
 Team ko có giải thưởng trong năm trc sẽ bị trừ 20% lương cuối tháng
 
-Tiền lương của tuyển thủ 
-= (tiền lương trong table staff + tiền lương cho tuyển thủ trong team / số lượng professional trong team) * p
-
-Tiền lương của coach
-= (tiền lương trong table staff + tiền lương cho coach trong team / số lượng coach trong team) * p
+Tiền lương của thành viên
+= tiền lương trong table staff + (tiền lương cho team / số lượng thành viên trong team) * p
 
 p = 0.8 nếu như team ko có giải thưởng trong năm trc, ngược lại p = 1
 

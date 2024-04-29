@@ -171,7 +171,7 @@ BEGIN
     INSERT INTO Staff_Phones VALUE(_ssn, phone);
 END$$
 DELIMITER ;
-CALL change_phone_v1('EMP0007','1234567890');
+#CALL change_phone_v1('EMP0007','1234567890');
 
 DELIMITER $$
 CREATE PROCEDURE change_phone_v2(IN _ssn CHAR(7), IN phone_1 CHAR(10), IN phone_2 CHAR(10))
