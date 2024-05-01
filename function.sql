@@ -166,6 +166,10 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE call_sponsor_money(IN _sponsor_name VARCHAR(50))
 BEGIN
+	IF NOT EXISTS (SELECT * FROM sponsor WHERE sponsor_name = _sponsor_name) THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'The sponser does not exist, can not find the total money';
+    END IF;
 	SELECT *, sponser_money(_sponsor_name)
 	FROM sponsor
 	WHERE sponsor_name = _sponsor_name;
@@ -173,3 +177,5 @@ END$$
 DELIMITER ;
 
 CALL call_sponsor_money('Ho Van');
+
+CALL call_sponsor_money('Dinh Van');
