@@ -130,7 +130,7 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
-
+/*
 SELECT * FROM Team_Salary_Tournament;
 SELECT * FROM Team_Salary_Sponser;
 SELECT * FROM Team_Salary;
@@ -139,7 +139,7 @@ FROM Staff;
 
 SELECT Team_name, number_of_staff(team_name) AS number_of_staff
 FROM Team;
-
+*/
 DELIMITER $$
 CREATE PROCEDURE bonus_salary()
 BEGIN
@@ -148,7 +148,7 @@ BEGIN
 END$$
 DELIMITER ;
 
-CALL bonus_salary();
+#CALL bonus_salary();
 
 DELIMITER $$
 CREATE FUNCTION sponser_money(_sponsor_name VARCHAR(50))
@@ -176,6 +176,15 @@ BEGIN
 END$$
 DELIMITER ;
 
-CALL call_sponsor_money('Ho Van');
+DELIMITER $$
+CREATE PROCEDURE sponsor_money_for_all()
+BEGIN
+	SELECT *, sponser_money(sponsor_name) AS total_money
+	FROM sponsor;
+END$$
+DELIMITER ;
 
-CALL call_sponsor_money('Dinh Van');
+/*
+CALL call_sponsor_money('Ho Van');
+CALL sponsor_money_for_all();
+CALL call_sponsor_money('Dinh Van');*/
