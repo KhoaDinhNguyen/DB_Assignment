@@ -149,3 +149,27 @@ END$$
 DELIMITER ;
 
 CALL bonus_salary();
+
+DELIMITER $$
+CREATE FUNCTION sponser_money(_sponsor_name VARCHAR(50))
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+	DECLARE money_ DECIMAL(10, 2);
+	SELECT SUM(money) INTO money_ 
+    FROM sponsorship
+    WHERE  sponsor = _sponsor_name;
+    RETURN money_;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE call_sponsor_money(IN _sponsor_name VARCHAR(50))
+BEGIN
+	SELECT *, sponser_money(_sponsor_name)
+	FROM sponsor
+	WHERE sponsor_name = _sponsor_name;
+END$$
+DELIMITER ;
+
+CALL call_sponsor_money('Ho Van');
