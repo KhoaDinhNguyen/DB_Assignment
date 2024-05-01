@@ -14,7 +14,7 @@ create table Staff (
     SSN			char(10)	not null unique,
     DoB			date,
     Name		varchar(50),
-    Salary 		decimal(10,2),
+    Salary 		decimal(10,2) CHECK(Salary >= 1000),
     Street 		varchar(50),
     City 		varchar(50)
     #constraint 	total_disjoint_staff

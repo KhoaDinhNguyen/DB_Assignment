@@ -53,16 +53,17 @@ GROUP BY team_name;
 
 # Count the number of people in the team
 DELIMITER $$
-CREATE FUNCTION number_of_people(_team_name VARCHAR(50))
+CREATE FUNCTION number_of_staff(_team_name VARCHAR(50))
 RETURNS INT
 DETERMINISTIC
 BEGIN
 	DECLARE num1 INT;
     DECLARE num2 INT;
+    
 	IF(NOT EXISTS(SELECT * FROM Team WHERE team_name = _team_name)) THEN
     RETURN -1;
     END IF;
-
+    
     SELECT COUNT(*) INTO num1
     FROM Professional_Player
     WHERE Team = _team_name;
@@ -77,7 +78,7 @@ DELIMITER ;
 
 # Create information about team salary from this year
 CREATE VIEW Team_Salary AS
-SELECT t1.Team_name , Reward_money, Proportion, Sponser_money, number_of_people(t1.team_name) AS number_of_people
+SELECT t1.Team_name , Reward_money, Proportion, Sponser_money, number_of_staff(t1.team_name) AS number_of_staff
 FROM Team_Salary_Tournament t1
 JOIN Team_Salary_Sponser t2
 ON t1.Team_name = t2.team_name;
@@ -90,7 +91,7 @@ DETERMINISTIC
 BEGIN
 	DECLARE money DECIMAL(10,2);
     
-    SELECT (Reward_money + Sponser_money / 12) * Proportion / number_of_player INTO money
+    SELECT (Reward_money + Sponser_money / 12) * Proportion / number_of_staff INTO money
     FROM Team_Salary
     WHERE Team_name = _team_name;
 
@@ -136,5 +137,15 @@ SELECT * FROM Team_Salary;
 SELECT Staff_id, Name, salary(Staff_id) AS Salary
 FROM Staff;
 
+SELECT Team_name, number_of_staff(team_name) AS number_of_staff
+FROM Team;
 
+DELIMITER $$
+CREATE PROCEDURE bonus_salary()
+BEGIN
+	SELECT *, salary(Staff_id) AS Bonus_Salary_Tournament
+	FROM Staff;
+END$$
+DELIMITER ;
 
+CALL bonus_salary();

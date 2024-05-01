@@ -53,10 +53,6 @@ BEGIN
 	SIGNAL SQLSTATE '45000'
 		SET MESSAGE_TEXT = 'The staff age is less than 18, cannot create this staff';
 	END IF;
-	IF (NEW.Salary < 1000) THEN
-	SIGNAL SQLSTATE '45000'
-		SET MESSAGE_TEXT = 'The staff salary is less than 1000$, cannot create this staff';
-	END IF;
 END $$
 
 DELIMITER $$
@@ -66,10 +62,6 @@ BEGIN
 	IF (YEAR(CURDATE()) - YEAR(NEW.Dob) < 18) THEN
 	SIGNAL SQLSTATE '45000'
 		SET MESSAGE_TEXT = 'The staff age is less than 18, cannot modify this staff';
-	END IF;
-	IF (NEW.Salary < 1000) THEN
-	SIGNAL SQLSTATE '45000'
-		SET MESSAGE_TEXT = 'The staff salary is less than 1000$, cannot modify this staff';
 	END IF;
 END $$
 
@@ -321,6 +313,11 @@ DELETE FROM Coach WHERE Coach_id = 'EMP0031';
 DELETE FROM Coach WHERE Coach_id = 'EMP0032';
 DELETE FROM Coach WHERE Coach_id = 'EMP0033';
 */
+
+DELETE FROM Staff WHERE Staff_id = 'EMP0031';
+DELETE FROM Staff WHERE Staff_id = 'EMP0032';
+DELETE FROM Staff WHERE Staff_id = 'EMP0033';
+
 ##################################################### STREAMER #################################################################
 
 /*
