@@ -2,7 +2,8 @@ DROP DATABASE game_company;
 CREATE DATABASE GAME_COMPANY;
 use GAME_COMPANY;
 SET SQL_SAFE_UPDATES = 0;
-
+SET @numberOfContract = 1;
+SET @staff_id_insert = '';
 SELECT LAST_INSERT_ID(NULL);
 
 CREATE TABLE id_count (
@@ -11,13 +12,12 @@ CREATE TABLE id_count (
 
 create table Staff (
 	Staff_Id	char(7) PRIMARY KEY,
-    SSN			char(10)	not null unique,
+    SSN			char(10) not null unique,
     DoB			date,
     Name		varchar(50),
     Salary 		decimal(10,2) CHECK(Salary >= 1000),
     Street 		varchar(50),
     City 		varchar(50)
-    #constraint 	total_disjoint_staff
 );
 
 DELIMITER $$
@@ -26,6 +26,7 @@ FOR EACH ROW
 BEGIN
 	INSERT INTO id_count VALUES (NULL);
 	SET NEW.staff_id = CONCAT('EMP', LPAD(LAST_INSERT_ID(), 4, '0'));
+    SET @staff_id_insert = CONCAT('EMP', LPAD(LAST_INSERT_ID(), 4, '0'));
 END $$
 DELIMITER ;
 
@@ -100,13 +101,28 @@ create table Dependencies (
 create table Contract (
 	Contract_Id	char(7)	primary key,
     term 		varchar(50),
-    policy		varchar(50),
     Start_Date	date,
     End_Date	date,
     Staff		char(7) not null,
 	constraint Contract_FK_staff_contract foreign key (Staff) references Staff (Staff_Id) on delete cascade on update cascade
 );
 
+DELIMITER $$
+CREATE TRIGGER auto_key_contract BEFORE INSERT ON Contract
+FOR EACH ROW 
+BEGIN
+	SET NEW.Contract_Id = CONCAT('CON', LPAD(@numberOfContract, 4, '0'));
+    SET @numberOfContract = @numberOfContract + 1;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER fill_contract AFTER INSERT ON staff
+FOR EACH ROW 
+BEGIN
+	INSERT INTO Contract(term, Start_Date, End_Date, Staff) VALUE ('Indemnity', DATE(CONCAT(YEAR(CURDATE()),"-01-01")), DATE(CONCAT(YEAR(CURDATE()),"-12-31")), @staff_id_insert);
+END $$
+DELIMITER ;
 create table Professional_Player (
 	Player_Id 	char(7) primary key,
     Debut_Date 	date,

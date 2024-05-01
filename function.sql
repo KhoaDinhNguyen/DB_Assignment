@@ -188,3 +188,5 @@ DELIMITER ;
 CALL call_sponsor_money('Ho Van');
 CALL sponsor_money_for_all();
 CALL call_sponsor_money('Dinh Van');*/
+
+SELECT * FROM Contract;

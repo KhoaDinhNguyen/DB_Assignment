@@ -1,19 +1,20 @@
 USE GAME_COMPANY;
 
 ######################################################### STAFF ###############################################################
-SET @staff_id_insert = '';
-
 DELIMITER $$
 CREATE PROCEDURE insert_staff(IN _ssn CHAR(10), IN _Dob date, IN _Name VARCHAR(50), IN _Salary DECIMAL(10,2), IN _Street VARCHAR(50), IN _City VARCHAR(50), IN _phone CHAR(10))
 BEGIN
     # INSERT STAFF INFO
-	INSERT INTO Staff(Ssn, Dob, Name, Salary, Street, City) VALUE (_ssn, _Dob, _Name, _Salary, _Street, _City);
-    
-	SELECT staff_id INTO @staff_id_insert FROM Staff WHERE ssn = _ssn;
+	INSERT INTO Staff(Ssn, Dob, Name, Salary, Street, City) VALUE (_ssn, _Dob, _Name, _Salary, _Street, _City);    
 	INSERT INTO Staff_phones(staff_id, phone) VALUE (@staff_id_insert, _phone);
 END$$
 DELIMITER ;
 
+/*
+An indemnity clause is one of the most important clauses in a business contract, 
+where one or both parties agree to compensate the other in case of damages or losses due to one party’s actions.
+It shifts liability from one party to the other.
+*/
 DELIMITER $$
 CREATE PROCEDURE insert_streamer(IN _staff_id CHAR(7), IN _nick_name VARCHAR(50), _game CHAR(7))
 BEGIN
