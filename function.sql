@@ -1,56 +1,5 @@
 USE GAME_COMPANY;
 
-# Create a function to calculate the total money the team get from sponser
-DELIMITER $$
-CREATE FUNCTION Team_Salary_from_Sponser(_team_name VARCHAR(50))
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-	DECLARE sum DECIMAL(10,2);
-	IF (NOT EXISTS(SELECT * FROM sponsorship WHERE team = _team_name)) THEN
-		RETURN 0.00;
-	ELSE
-		SELECT SUM(money) INTO sum
-        FROM sponsorship
-        WHERE team = _team_name;
-        RETURN sum;
-	END IF;
-END $$
-DELIMITER ;
-
-# Create a function to calculate the total money the team get from the last tournmant 
-DELIMITER $$
-CREATE FUNCTION Team_Salary_from_Tournament(_team_name VARCHAR(50))
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-	DECLARE sum DECIMAL(10,2);
-	IF (NOT EXISTS(SELECT * FROM Tournament WHERE joined_team = _team_name AND competition_year = YEAR(CURDATE()) - 1)) THEN
-		RETURN 0.00;
-	ELSE
-		SELECT SUM(reward) INTO sum
-        FROM Tournament
-        WHERE joined_team = _team_name AND competition_year = YEAR(CURDATE()) - 1;
-        RETURN sum;
-	END IF;
-END $$
-DELIMITER ;
-
-# Create two view from two previous functions
-CREATE VIEW Team_Salary_Sponser AS
-SELECT Team_name, Team_Salary_from_sponser(Team_name) AS Sponser_money
-FROM team
-GROUP BY team_name;
-
-CREATE VIEW Team_Salary_Tournament AS
-SELECT Team_name, Team_Salary_from_Tournament(Team_name) AS Reward_money, 
-	CASE 
-		WHEN Team_Salary_from_Tournament(Team_name) = 0.00 AND YEAR(start_date) != YEAR(CURDATE()) THEN 0.8
-        ELSE 1
-	END AS Proportion
-FROM team
-GROUP BY team_name;
-
 # Count the number of people in the team
 DELIMITER $$
 CREATE FUNCTION number_of_staff(_team_name VARCHAR(50))
@@ -76,23 +25,76 @@ BEGIN
 END $$
 DELIMITER ;
 
+# Create a function to calculate the total money the team get from sponser
+DELIMITER $$
+CREATE FUNCTION Bonus_Sponsor(_team_name VARCHAR(50))
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+	DECLARE sum DECIMAL(10,2);
+	IF (NOT EXISTS(SELECT * FROM Team WHERE team_name = _team_name)) THEN
+		RETURN 0.00;
+	ELSEIF(NOT EXISTS(SELECT * FROM sponsorship WHERE team = _team_name)) THEN
+		RETURN 0.00;
+	ELSE
+		SELECT SUM(money) INTO sum
+        FROM sponsorship
+        WHERE team = _team_name;
+        RETURN sum;
+	END IF;
+END $$
+DELIMITER ;
+
+# Create a function to calculate the total money the team get from the last tournmant 
+DELIMITER $$
+CREATE FUNCTION Bonus_Tournament(_team_name VARCHAR(50))
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+	DECLARE sum DECIMAL(10,2);
+	IF (NOT EXISTS(SELECT * FROM Team WHERE team_name = _team_name)) THEN
+		RETURN 0.00;
+	ELSEIF (NOT EXISTS(SELECT * FROM Tournament WHERE joined_team = _team_name AND competition_year = YEAR(CURDATE()) - 1)) THEN
+		RETURN 0.00;
+	ELSE
+		SELECT SUM(reward) INTO sum
+        FROM Tournament
+        WHERE joined_team = _team_name AND competition_year = YEAR(CURDATE()) - 1;
+        RETURN sum;
+	END IF;
+END $$
+DELIMITER ;
+
+# Create two view from two previous functions
+SELECT Team_name, Bonus_Sponsor(Team_name) AS Sponsor_money
+FROM team;
+
+SELECT Team_name, Bonus_Tournament(Team_name) AS Reward_money, 
+	CASE 
+		WHEN Bonus_Tournament(Team_name) = 0.00 AND YEAR(start_date) != YEAR(CURDATE()) THEN 0.8
+        ELSE 1
+	END AS Percentage
+FROM team;
+
 # Create information about team salary from this year
-CREATE VIEW Team_Salary AS
-SELECT t1.Team_name , Reward_money, Proportion, Sponser_money, number_of_staff(t1.team_name) AS number_of_staff
-FROM Team_Salary_Tournament t1
-JOIN Team_Salary_Sponser t2
-ON t1.Team_name = t2.team_name;
+CREATE VIEW Team_Bonus AS
+SELECT * , Bonus_Tournament(Team_name) AS Reward_money, 
+	CASE 
+		WHEN Bonus_Tournament(Team_name) = 0.00 AND YEAR(start_date) != YEAR(CURDATE()) THEN 0.8
+        ELSE 1
+	END AS Percentage, Bonus_Sponsor(Team_name) AS Sponsor_money, number_of_staff(Team_name) AS number_of_staff
+FROM Team;
 
 # Find the team salary per person in the team
 DELIMITER $$
-CREATE FUNCTION Team_Salary_Per_Person(_team_name VARCHAR(50))
+CREATE FUNCTION Bonus_Per_Person(_team_name VARCHAR(50))
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
 	DECLARE money DECIMAL(10,2);
     
-    SELECT (Reward_money + Sponser_money / 12) * Proportion / number_of_staff INTO money
-    FROM Team_Salary
+    SELECT (Reward_money + Sponsor_money / 12) * Percentage / number_of_staff INTO money
+    FROM Team_Bonus
     WHERE Team_name = _team_name;
 
 	RETURN money;
@@ -126,7 +128,7 @@ BEGIN
 	DECLARE team_name VARCHAR(50);
     SET team_name = belong_to_team(_Staff_id);
     IF(team_name = 'NULL') THEN RETURN 0;
-    ELSE RETURN Team_Salary_Per_Person(team_name);
+    ELSE RETURN Bonus_Per_Person(team_name);
     END IF;
 END $$
 DELIMITER ;
@@ -148,7 +150,7 @@ BEGIN
 END$$
 DELIMITER ;
 
-#CALL bonus_salary();
+CALL bonus_salary();
 
 DELIMITER $$
 CREATE FUNCTION sponser_money(_sponsor_name VARCHAR(50))
@@ -187,6 +189,6 @@ DELIMITER ;
 /*
 CALL call_sponsor_money('Ho Van');
 CALL sponsor_money_for_all();
-CALL call_sponsor_money('Dinh Van');*/
-
-SELECT * FROM Contract;
+CALL call_sponsor_money('Dinh Van');
+SELECT * FROM staff_phones;
+SELECT * FROM Contract;*/
