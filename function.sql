@@ -85,23 +85,9 @@ SELECT * , Bonus_Tournament(Team_name) AS Reward_money,
 	END AS Percentage, Bonus_Sponsor(Team_name) AS Sponsor_money, number_of_staff(Team_name) AS number_of_staff
 FROM Team;
 
-# Find the team salary per person in the team
-DELIMITER $$
-CREATE FUNCTION Bonus_Per_Person(_team_name VARCHAR(50))
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-	DECLARE money DECIMAL(10,2);
-    
-    SELECT (Reward_money + Sponsor_money / 12) * Percentage / number_of_staff INTO money
-    FROM Team_Bonus
-    WHERE Team_name = _team_name;
-
-	RETURN money;
-END $$
-DELIMITER ;
-
+SELECT * FROM Team_Bonus;
 # Find if the staff belong to any team
+
 DELIMITER $$
 CREATE FUNCTION belong_to_team(_Staff_Id CHAR(7))
 RETURNS VARCHAR(50)
@@ -118,20 +104,29 @@ BEGIN
     RETURN 'NULL';
 END $$
 DELIMITER ;
-
+/*
+SELECT belong_to_team('EMP0001');
+SELECT belong_to_team('EMP0020');
+SELECT belong_to_team('EMP0031');
+*/
 # find the salary for staff id
 DELIMITER $$
-CREATE FUNCTION salary(_Staff_Id CHAR(7))
+CREATE FUNCTION staff_bonus_tournament(_Staff_Id CHAR(7))
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
-	DECLARE team_name VARCHAR(50);
-    SET team_name = belong_to_team(_Staff_id);
-    IF(team_name = 'NULL') THEN RETURN 0;
-    ELSE RETURN Bonus_Per_Person(team_name);
+	DECLARE _team_name VARCHAR(50);
+    DECLARE money DECIMAL(10,2);
+    SET _team_name = belong_to_team(_Staff_id);
+    IF(_team_name = 'NULL') THEN RETURN 0;
+    ELSE 
+		SELECT (Reward_money + Sponsor_money / 12) * Percentage / number_of_staff INTO money FROM Team_Bonus WHERE team_name = _team_name;
+		RETURN money;
     END IF;
 END $$
 DELIMITER ;
+
+
 /*
 SELECT * FROM Team_Salary_Tournament;
 SELECT * FROM Team_Salary_Sponser;
@@ -142,13 +137,34 @@ FROM Staff;
 SELECT Team_name, number_of_staff(team_name) AS number_of_staff
 FROM Team;
 */
+
+DELIMITER $$
+CREATE FUNCTION get_streamer_donation_cut_with_empid(id char(7)) 
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+	DECLARE toReturn DECIMAL(10,2);
+	IF id NOT IN (SELECT streamer FROM  game_company.donations) 
+		THEN  SET toReturn = 0.0;
+    END IF;
+	SELECT  SUM(dons.money) INTO toReturn FROM game_company.donations dons
+	GROUP BY 
+		dons.streamer
+	HAVING
+		dons.streamer = id;
+    SET toReturn = toReturn * 0.7;
+	RETURN toReturn;
+END$$
+DELIMITER ;
+
 DELIMITER $$
 CREATE PROCEDURE bonus_salary()
 BEGIN
-	SELECT *, salary(Staff_id) AS Bonus_Salary_Tournament
+	SELECT *, staff_bonus_tournament(Staff_id) AS Bonus_Salary_Tournament, get_streamer_donation_cut_with_empid(Staff_id) AS Bonus_Salary_Stream
 	FROM Staff;
 END$$
 DELIMITER ;
+
 
 CALL bonus_salary();
 
@@ -192,3 +208,5 @@ CALL sponsor_money_for_all();
 CALL call_sponsor_money('Dinh Van');
 SELECT * FROM staff_phones;
 SELECT * FROM Contract;*/
+
+
