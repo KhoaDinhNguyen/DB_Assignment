@@ -142,10 +142,13 @@ FROM Staff;
 SELECT Team_name, number_of_staff(team_name) AS number_of_staff
 FROM Team;
 */
+
+DROP PROCEDURE bonus_Salary;
 DELIMITER $$
 CREATE PROCEDURE bonus_salary()
 BEGIN
-	SELECT *, salary(Staff_id) AS Bonus_Salary_Tournament
+	SELECT *, salary(Staff_id) AS Bonus_Salary_Tournament, 
+    get_streamer_donation_cut_with_empid(Staff_id) AS "Bonus donation"
 	FROM Staff;
 END$$
 DELIMITER ;
