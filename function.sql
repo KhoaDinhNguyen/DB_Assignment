@@ -2,7 +2,7 @@ USE GAME_COMPANY;
 
 # Count the number of people in the team
 DELIMITER $$
-CREATE FUNCTION number_of_staff(_team_name VARCHAR(50))
+CREATE FUNCTION get_number_of_staff_from_team_name(_team_name VARCHAR(50))
 RETURNS INT
 DETERMINISTIC
 BEGIN
@@ -27,7 +27,7 @@ DELIMITER ;
 
 # Create a function to calculate the total money the team get from sponser
 DELIMITER $$
-CREATE FUNCTION Bonus_Sponsor(_team_name VARCHAR(50))
+CREATE FUNCTION get_total_sponsor_money_from_team_name(_team_name VARCHAR(50))
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
@@ -47,7 +47,7 @@ DELIMITER ;
 
 # Create a function to calculate the total money the team get from the last tournmant 
 DELIMITER $$
-CREATE FUNCTION Bonus_Tournament(_team_name VARCHAR(50))
+CREATE FUNCTION get_total_tournament_money_from_team_name(_team_name VARCHAR(50))
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
@@ -66,23 +66,25 @@ END $$
 DELIMITER ;
 
 # Create two view from two previous functions
+/*
 SELECT Team_name, Bonus_Sponsor(Team_name) AS Sponsor_money
 FROM team;
 
-SELECT Team_name, Bonus_Tournament(Team_name) AS Reward_money, 
+SELECT Team_name, get_total_tournament_money_from_team_name(Team_name) AS Reward_money, 
 	CASE 
-		WHEN Bonus_Tournament(Team_name) = 0.00 AND YEAR(start_date) != YEAR(CURDATE()) THEN 0.8
+		WHEN get_total_tournament_money_from_team_name(Team_name) = 0.00 AND YEAR(start_date) != YEAR(CURDATE()) THEN 0.8
         ELSE 1
 	END AS Percentage
 FROM team;
-
+*/
 # Create information about team salary from this year
 CREATE VIEW Team_Bonus AS
-SELECT * , Bonus_Tournament(Team_name) AS Reward_money, 
+SELECT * , get_total_tournament_money_from_team_name(Team_name) AS Reward_money, 
 	CASE 
-		WHEN Bonus_Tournament(Team_name) = 0.00 AND YEAR(start_date) != YEAR(CURDATE()) THEN 0.8
+		WHEN get_total_tournament_money_from_team_name(Team_name) = 0.00 AND YEAR(start_date) != YEAR(CURDATE()) THEN 0.8
         ELSE 1
-	END AS Percentage, Bonus_Sponsor(Team_name) AS Sponsor_money, number_of_staff(Team_name) AS number_of_staff
+	END AS Percentage, get_total_sponsor_money_from_team_name(Team_name) AS Sponsor_money, 
+    get_number_of_staff_from_team_name(Team_name) AS number_of_staff
 FROM Team;
 
 SELECT * FROM Team_Bonus;
@@ -111,7 +113,7 @@ SELECT belong_to_team('EMP0031');
 */
 # find the salary for staff id
 DELIMITER $$
-CREATE FUNCTION staff_bonus_tournament(_Staff_Id CHAR(7))
+CREATE FUNCTION get_staff_bonus_from_team(_Staff_Id CHAR(7))
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
@@ -160,7 +162,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE bonus_salary()
 BEGIN
-	SELECT *, staff_bonus_tournament(Staff_id) AS Bonus_Salary_Tournament, get_streamer_donation_cut_with_empid(Staff_id) AS Bonus_Salary_Stream
+	SELECT *, get_staff_bonus_from_team(Staff_id) AS Bonus_Salary_Tournament, get_streamer_donation_cut_with_empid(Staff_id) AS Bonus_Salary_Stream
 	FROM Staff;
 END$$
 DELIMITER ;
